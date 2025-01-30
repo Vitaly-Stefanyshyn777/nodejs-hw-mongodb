@@ -1,4 +1,4 @@
-import { model, Schema, version } from 'mongoose';
+// import { model, Schema, version } from 'mongoose';
 import mongoose from 'mongoose';
 
 const contactsSchema = new mongoose.Schema(
