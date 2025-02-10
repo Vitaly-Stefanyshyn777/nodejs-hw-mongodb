@@ -1,8 +1,60 @@
-import { ContactsCollection } from '../models/contacts.js';
+import { ContactsCollection } from "../models/contacts.js";
+import { SORT_ORDER } from "../constants/index.js";
+import { calculatePaginationData } from "../utils/ calculatePaginationData.js";
 
-export const getAllContacts = async () => {
-  const contacts = await ContactsCollection.find();
-  return contacts;
+export const getAllContacts = async ({
+  page = 1,
+  perPage = 10,
+  sortOrder = SORT_ORDER.ASC,
+  sortBy = "_id",
+  filter = {},
+}) => {
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
+
+  const contactsQuery = ContactsCollection.find();
+  if (filter.type) {
+    contactsQuery.where("contactType").equals(filter.type); // Фільтр по 'type'
+  }
+
+  if (filter.isFavourite !== undefined) {
+    contactsQuery.where("isFavourite").equals(filter.isFavourite); // Фільтр по 'isFavourite'
+  }
+  if (filter.gender) {
+    contactsQuery.where("type").equals(filter.isFavourite);
+  }
+  if (filter.gender) {
+    contactsQuery.where("gender").equals(filter.gender);
+  }
+  if (filter.maxAge) {
+    contactsQuery.where("age").lte(filter.maxAge);
+  }
+  if (filter.minAge) {
+    contactsQuery.where("age").gte(filter.minAge);
+  }
+  if (filter.maxAvgMark) {
+    contactsQuery.where("avgMark").lte(filter.maxAvgMark);
+  }
+  if (filter.minAvgMark) {
+    contactsQuery.where("avgMark").gte(filter.minAvgMark);
+  }
+
+  const contactsCount = await ContactsCollection.find()
+    .merge(contactsQuery)
+    .countDocuments();
+
+  const data = await contactsQuery
+    .sort({ [sortBy]: sortOrder })
+    .skip(skip)
+    .limit(limit)
+    .exec();
+
+  const paginationData = calculatePaginationData(contactsCount, perPage, page);
+
+  return {
+    data: data,
+    ...paginationData,
+  };
 };
 
 export const getContactById = async (contactId) => {
@@ -15,15 +67,18 @@ export const createContact = async (payload) => {
   return contact;
 };
 
-export const updateContact = async (contactId, payload) => {
-  const updateContact = await ContactsCollection.findOneAndUpdate(
+export const updateContact = async (contactId, payload = {}) => {
+  const updatedContact = await ContactsCollection.findOneAndUpdate(
     { _id: contactId },
     payload,
-    { new: true },
+    {
+      new: true,
+    }
   );
 
-  if (!updateContact) return null;
-  return updateContact;
+  if (!updatedContact) return null;
+
+  return updatedContact;
 };
 
 export const deleteContact = async (contactId) => {
