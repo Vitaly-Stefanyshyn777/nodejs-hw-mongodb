@@ -7,16 +7,26 @@
 // };
 
 // bootstrap();
-import express from "express";
+import { setupServer } from "./server.js";
+import { initMongoConnection } from "./db/initMongoConnection.js";
 
-const app = express();
+const bootstrap = async () => {
+  try {
+    console.log("⏳ Ініціалізація підключення до MongoDB...");
+    await initMongoConnection();
+    console.log("✅ Підключення до MongoDB встановлено!");
 
-// Створіть обробник для кореневого маршруту '/'
-app.get("/", (req, res) => {
-  res.send("Hello, World!");
-});
+    console.log("⏳ Запуск сервера...");
+    const app = setupServer();
 
-// Запустіть сервер
-app.listen(3021, () => {
-  console.log("Server is running on port 3021");
-});
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`✅ Сервер успішно запущено на порту ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Помилка при запуску сервера:", error);
+    process.exit(1); // Завершує процес з кодом помилки
+  }
+};
+
+bootstrap();
