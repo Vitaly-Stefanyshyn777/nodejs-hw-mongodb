@@ -61,7 +61,7 @@ import {
 import { ctrlWrapper } from "../utils/ctrlWrapper.js";
 import { Router } from "express";
 import { validateBody } from "../middlewares/validateBody.js";
-import { isValidId } from "../middlewares/isValidId.js"; // Додано імпорт
+import { isValidId } from "../middlewares/isValidId.js";
 import {
   createContactsSchema,
   updateContactsSchema,

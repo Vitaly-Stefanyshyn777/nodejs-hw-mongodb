@@ -43,7 +43,7 @@
 
 import { HttpError } from "http-errors";
 import pino from "pino";
-import { Error as MongooseError } from "mongoose"; // Додаємо імпорт помилок Mongoose
+import { Error as MongooseError } from "mongoose";
 
 const logger = pino();
 

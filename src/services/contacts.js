@@ -14,11 +14,11 @@ export const getAllContacts = async ({
 
   const contactsQuery = ContactsCollection.find();
   if (filter.type) {
-    contactsQuery.where("contactType").equals(filter.type); // Фільтр по 'type'
+    contactsQuery.where("contactType").equals(filter.type);
   }
 
   if (filter.isFavourite !== undefined) {
-    contactsQuery.where("isFavourite").equals(filter.isFavourite); // Фільтр по 'isFavourite'
+    contactsQuery.where("isFavourite").equals(filter.isFavourite);
   }
   if (filter.gender) {
     contactsQuery.where("type").equals(filter.isFavourite);
