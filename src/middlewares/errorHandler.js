@@ -1,6 +1,30 @@
-import { HttpError } from 'http-errors';
+// import { HttpError } from 'http-errors';
+
+// export const errorHandler = (err, req, res, next) => {
+//   if (err instanceof HttpError) {
+//     res.status(err.status).json({
+//       status: err.status,
+//       message: err.message,
+//       data: err,
+//     });
+//     return;
+//   }
+
+//   res.status(500).json({
+//     status: 500,
+//     message: 'Something went wrong',
+//     data: err.message,
+//   });
+// };
+
+import { HttpError } from "http-errors";
+import pino from "pino";
+
+const logger = pino();
 
 export const errorHandler = (err, req, res, next) => {
+  logger.error(err);
+
   if (err instanceof HttpError) {
     res.status(err.status).json({
       status: err.status,
@@ -12,7 +36,7 @@ export const errorHandler = (err, req, res, next) => {
 
   res.status(500).json({
     status: 500,
-    message: 'Something went wrong',
+    message: "Something went wrong",
     data: err.message,
   });
 };
