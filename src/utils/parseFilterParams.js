@@ -1,4 +1,3 @@
-// src/utils/parseFilterParams.js
 const parseFavourite = (value) =>
   typeof value === "string" ? value.toLowerCase() === "true" : undefined;
 
