@@ -1,18 +1,20 @@
 import express from 'express';
-import { env } from './env.js';
-import pino from 'pino-http';
 import cors from 'cors';
-import contactsRouter from './routers/contacts.js';
-import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import pino from 'pino-http';
+import { env } from './utils/env.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import allRouters from './routers/index.js';
+import cookieParser from 'cookie-parser';
 
-const PORT = Number(env('PORT', 3000));
+const PORT = Number(env('PORT', '3000'));
 
 export const setupServer = () => {
   const app = express();
 
-  app.use(express.json());
   app.use(cors());
+
+  app.use(cookieParser());
 
   app.use(
     pino({
@@ -22,7 +24,13 @@ export const setupServer = () => {
     }),
   );
 
-  app.use(contactsRouter);
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Hello Mentor!',
+    });
+  });
+
+  app.use(allRouters);
 
   app.use('*', notFoundHandler);
 

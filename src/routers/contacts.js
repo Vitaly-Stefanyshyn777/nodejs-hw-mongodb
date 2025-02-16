@@ -1,52 +1,70 @@
-// import {
-//   createContactController,
-//   deleteContactController,
-//   getAllContactsController,
-//   getContactByIdController,
-//   patchContactController,
-// } from '../controllers/contacts.js';
-// import { ctrlWrapper } from '../utils/ctrlWrapper.js';
-// import { Router } from 'express';
-
-// const router = Router();
-
-// router.get('/contacts', ctrlWrapper(getAllContactsController));
-// router.get('/contacts/:contactId', ctrlWrapper(getContactByIdController));
-// router.post('/contacts', ctrlWrapper(createContactController));
-// router.patch('/contacts/:contactId', ctrlWrapper(patchContactController));
-// router.delete('/contacts/:contactId', ctrlWrapper(deleteContactController));
-
-// export default router;
-
+import { Router } from 'express';
+import express from 'express';
 import {
   createContactController,
   deleteContactController,
-  getAllContactsController,
-  getContactByIdController,
-  patchContactController,
-} from "../controllers/contacts.js";
-import { ctrlWrapper } from "../utils/ctrlWrapper.js";
-import { Router } from "express";
-import { validateBody } from "../middlewares/validateBody.js";
+  gerContactByIdController,
+  getContactsController,
+  updateContactController,
+} from '../controllers/contacts.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import {
-  createContactsSchema,
-  updateContactsSchema,
-} from "../validation/contacts.js";
+  createContactSchema,
+  updateContactSchema,
+} from '../validation/contacts.js';
+import { validateBody } from '../middlewares/validateBody.js';
+import { isValidId } from '../middlewares/isValidId.js';
+import { authenticate } from '../middlewares/authenticate.js';
+import { checkRoles } from '../middlewares/checkRoles.js';
+import { ROLES } from '../constans/constans.js';
+import { upload } from '../middlewares/upload.js';
+
+const jsonParser = express.json();
 
 const router = Router();
 
-router.get("/contacts", ctrlWrapper(getAllContactsController));
-router.get("/contacts/:contactId", ctrlWrapper(getContactByIdController));
+router.get(
+  '/',
+  authenticate,
+  checkRoles(ROLES.ADMIN, ROLES.USER),
+  ctrlWrapper(getContactsController),
+);
+
+router.get(
+  '/:contactId',
+  authenticate,
+  checkRoles(ROLES.ADMIN, ROLES.USER),
+  isValidId,
+  ctrlWrapper(gerContactByIdController),
+);
+
 router.post(
-  "/contacts",
-  validateBody(createContactsSchema),
-  ctrlWrapper(createContactController)
+  '/',
+  authenticate,
+  checkRoles(ROLES.ADMIN, ROLES.USER),
+  jsonParser,
+  upload.single('photo'),
+  validateBody(createContactSchema),
+  ctrlWrapper(createContactController),
 );
+
 router.patch(
-  "/contacts/:contactId",
-  validateBody(updateContactsSchema),
-  ctrlWrapper(patchContactController)
+  '/:contactId',
+  authenticate,
+  checkRoles(ROLES.ADMIN, ROLES.USER),
+  isValidId,
+  jsonParser,
+  upload.single('photo'),
+  validateBody(updateContactSchema),
+  ctrlWrapper(updateContactController),
 );
-router.delete("/contacts/:contactId", ctrlWrapper(deleteContactController));
+
+router.delete(
+  '/:contactId',
+  authenticate,
+  checkRoles(ROLES.ADMIN, ROLES.USER),
+  isValidId,
+  ctrlWrapper(deleteContactController),
+);
 
 export default router;

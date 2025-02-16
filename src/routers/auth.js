@@ -1,22 +1,56 @@
-import { Router } from "express";
-import { ctrlWrapper } from "../utils/ctrlWrapper.js";
-import { loginUserSchema, registerUserSchema } from "../validation/auth.js";
+import { Router } from 'express';
+import express from 'express';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import {
-  registerUserController,
   loginUserController,
   logoutUserController,
   refreshUserSessionController,
-} from "../controllers/auth.js";
-import { validateBody } from "../middlewares/validateBody.js";
+  registrationUserController,
+  requestResetEmailController,
+  resetUserPaswordController,
+} from '../controllers/auth.js';
+import { validateBody } from '../middlewares/validateBody.js';
+import {
+  loginSchema,
+  registrationSchema,
+  requstResetEmailSchema,
+  resetPasswordSchema,
+} from '../validation/auth.js';
+
+const jsonParser = express.json();
 
 const router = Router();
 
-const postRoute = (path, schema, controller) =>
-  router.post(path, validateBody(schema), ctrlWrapper(controller));
+router.post(
+  '/register',
+  jsonParser,
+  validateBody(registrationSchema),
+  ctrlWrapper(registrationUserController),
+);
 
-postRoute("/register", registerUserSchema, registerUserController);
-postRoute("/login", loginUserSchema, loginUserController);
-router.post("/logout", ctrlWrapper(logoutUserController));
-router.post("/refresh", ctrlWrapper(refreshUserSessionController));
+router.post(
+  '/login',
+  jsonParser,
+  validateBody(loginSchema),
+  ctrlWrapper(loginUserController),
+);
+
+router.post('/refresh', ctrlWrapper(refreshUserSessionController));
+
+router.post('/logout', ctrlWrapper(logoutUserController));
+
+router.post(
+  '/send-reset-email',
+  jsonParser,
+  validateBody(requstResetEmailSchema),
+  ctrlWrapper(requestResetEmailController),
+);
+
+router.post(
+  '/reset-pwd',
+  jsonParser,
+  validateBody(resetPasswordSchema),
+  ctrlWrapper(resetUserPaswordController),
+);
 
 export default router;
