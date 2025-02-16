@@ -11,12 +11,20 @@ import { validateBody } from "../middlewares/validateBody.js";
 
 const router = Router();
 
-const postRoute = (path, schema, controller) =>
-  router.post(path, validateBody(schema), ctrlWrapper(controller));
+router.post(
+  "/register",
+  validateBody(registerUserSchema),
+  ctrlWrapper(registerUserController)
+);
 
-postRoute("/register", registerUserSchema, registerUserController);
-postRoute("/login", loginUserSchema, loginUserController);
+router.post(
+  "/login",
+  validateBody(loginUserSchema),
+  ctrlWrapper(loginUserController)
+);
+
 router.post("/logout", ctrlWrapper(logoutUserController));
+
 router.post("/refresh", ctrlWrapper(refreshUserSessionController));
 
 export default router;

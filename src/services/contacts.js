@@ -1,45 +1,46 @@
-import { ContactsCollection } from "../models/contacts.js";
-import { SORT_ORDER } from "../constants/index.js";
-import { calculatePaginationData } from "../utils/ calculatePaginationData.js";
+import { ContactsCollection } from '../models/contact.js';
+import { SORT_ORDER } from '../constants/index.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
 export const getAllContacts = async ({
   page = 1,
   perPage = 10,
   sortOrder = SORT_ORDER.ASC,
-  sortBy = "_id",
+  sortBy = '_id',
   filter = {},
+  userId,
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
-  const contactsQuery = ContactsCollection.find();
+  const contactsQuery = ContactsCollection.find({ userId });
   if (filter.type) {
-    contactsQuery.where("contactType").equals(filter.type); // Фільтр по 'type'
+    contactsQuery.where('contactType').equals(filter.type); // Фільтр по 'type'
   }
 
   if (filter.isFavourite !== undefined) {
-    contactsQuery.where("isFavourite").equals(filter.isFavourite); // Фільтр по 'isFavourite'
+    contactsQuery.where('isFavourite').equals(filter.isFavourite); // Фільтр по 'isFavourite'
   }
   if (filter.gender) {
-    contactsQuery.where("type").equals(filter.isFavourite);
+    contactsQuery.where('type').equals(filter.isFavourite);
   }
   if (filter.gender) {
-    contactsQuery.where("gender").equals(filter.gender);
+    contactsQuery.where('gender').equals(filter.gender);
   }
   if (filter.maxAge) {
-    contactsQuery.where("age").lte(filter.maxAge);
+    contactsQuery.where('age').lte(filter.maxAge);
   }
   if (filter.minAge) {
-    contactsQuery.where("age").gte(filter.minAge);
+    contactsQuery.where('age').gte(filter.minAge);
   }
   if (filter.maxAvgMark) {
-    contactsQuery.where("avgMark").lte(filter.maxAvgMark);
+    contactsQuery.where('avgMark').lte(filter.maxAvgMark);
   }
   if (filter.minAvgMark) {
-    contactsQuery.where("avgMark").gte(filter.minAvgMark);
+    contactsQuery.where('avgMark').gte(filter.minAvgMark);
   }
 
-  const contactsCount = await ContactsCollection.find()
+  const contactsCount = await ContactsCollection.find({ userId })
     .merge(contactsQuery)
     .countDocuments();
 
@@ -57,8 +58,11 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = async (contactId) => {
-  const contact = await ContactsCollection.findById(contactId);
+export const getContactById = async (contactId, userId) => {
+  const contact = await ContactsCollection.findOne({
+    _id: contactId,
+    userId: userId,
+  });
   return contact;
 };
 
@@ -67,13 +71,13 @@ export const createContact = async (payload) => {
   return contact;
 };
 
-export const updateContact = async (contactId, payload = {}) => {
+export const updateContact = async (contactId, userId, payload = {}) => {
   const updatedContact = await ContactsCollection.findOneAndUpdate(
-    { _id: contactId },
+    { _id: contactId, userId },
     payload,
     {
       new: true,
-    }
+    },
   );
 
   if (!updatedContact) return null;
@@ -81,9 +85,10 @@ export const updateContact = async (contactId, payload = {}) => {
   return updatedContact;
 };
 
-export const deleteContact = async (contactId) => {
+export const deleteContact = async (contactId, userId) => {
   const contact = await ContactsCollection.findOneAndDelete({
     _id: contactId,
+    userId,
   });
 
   return contact;

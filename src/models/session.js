@@ -1,11 +1,18 @@
-import { SessionCollection } from "./src/db/models/session.js";
+import { mongoose, Schema } from 'mongoose';
 
-const newSession = await SessionCollection.create({
-  userId: "65a1b2c3d4e5f6a7b8c9d0e1",
-  accessToken: "someAccessToken",
-  refreshToken: "someRefreshToken",
-  accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000), // 15 хвилин
-  refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 днів
-});
+const sessionSchema = new mongoose.Schema(
+  {
+    userId: { type: Schema.Types.ObjectId, required: true },
+    accessToken: { type: String, required: true },
+    refreshToken: { type: String, required: true },
+    accessTokenValidUntil: { type: Date, required: true },
+    refreshTokenValidUntil: { type: Date, required: true },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
+);
 
-console.log(newSession);
+const SessionCollection = mongoose.model('sessions', sessionSchema);
+export { SessionCollection };
