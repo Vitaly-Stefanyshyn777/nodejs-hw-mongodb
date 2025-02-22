@@ -1,5 +1,5 @@
-import { ContactsCollection } from "../models/contact.js";
-import { calculatePaginationData } from "../utils/calculatePaginationData.js";
+import { ContactsCollection } from '../db/models/contact.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
 export const getAllContacts = async ({
   page,
@@ -13,13 +13,11 @@ export const getAllContacts = async ({
 
   const contactsQuery = ContactsCollection.find({ userId: user._id });
 
-  console.log(filter.contactType);
-
   if (filter.contactType) {
-    contactsQuery.where("contactType").equals(filter.contactType);
+    contactsQuery.where('contactType').equals(filter.contactType);
   }
-  if (typeof filter.isFavourite === "boolean") {
-    contactsQuery.where("isFavourite").equals(filter.isFavourite);
+  if (typeof filter.isFavourite === 'boolean') {
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
 
   const [totalContacts, contacts] = await Promise.all([
@@ -58,7 +56,7 @@ export const updateContact = async (contactId, user, contact, options = {}) => {
       new: true,
       includeResultMetadata: true,
       ...options,
-    }
+    },
   );
 
   if (!rawResult || !rawResult.value) return null;

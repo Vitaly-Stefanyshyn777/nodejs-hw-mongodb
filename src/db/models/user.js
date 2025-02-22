@@ -1,6 +1,5 @@
-import { model, Schema } from "mongoose";
-import { ROLES } from "../constans/constans.js";
-// import { ROLES } from '../../constans/constans.js';
+import { model, Schema } from 'mongoose';
+import { ROLES } from '../../constans/constans.js';
 
 const userSchema = new Schema(
   {
@@ -13,7 +12,7 @@ const userSchema = new Schema(
       default: ROLES.USER,
     },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, versionKey: false },
 );
 
 userSchema.methods.toJSON = function () {
@@ -22,4 +21,4 @@ userSchema.methods.toJSON = function () {
   return obj;
 };
 
-export const User = model("users", userSchema);
+export const User = model('users', userSchema);
